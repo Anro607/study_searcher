@@ -5,7 +5,6 @@ class TabControllerVO {
 }
 
 class TabNotifier extends Notifier<TabControllerVO> {
-  int get bottomNavigationBarIndex => state.bottomNavigationBarIndex;
   set bottomNavigationBarIndex(int value) {
     final newState = TabControllerVO();
     newState.bottomNavigationBarIndex = value;
