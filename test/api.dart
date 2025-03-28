@@ -15,9 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-      ),
+      theme: ThemeData(primarySwatch: Colors.deepPurple),
       home: HttpApp(),
     );
   }
@@ -107,7 +105,7 @@ class _HttpAppState extends State<HttpApp> {
 
   Future<String> getJSONData() async {
     var url = Uri.parse(
-      'https://dapi.kakao.com/v2/search/web?target=title&query=dog&size=$max_search',
+      'https://dapi.kakao.com/v2/search/web?target=title&query=pizza&size=$max_search',
     );
     var response = await http.get(
       url,
