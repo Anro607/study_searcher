@@ -8,6 +8,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -22,6 +24,8 @@ class MyApp extends StatelessWidget {
 }
 
 class HttpApp extends StatefulWidget {
+  const HttpApp({super.key});
+
   @override
   _HttpAppState createState() => _HttpAppState();
 }
@@ -72,20 +76,20 @@ class _HttpAppState extends State<HttpApp> {
                     context,
                     search_results[i]["title"].replaceAll(RegExp(r'<.*?>'), ''),
                     search_results[i]["contents"].replaceAll(
-                      RegExp(r'<.*?>'),
+                      RegExp(r'<.*?>'), 
                       '',
-                    ),
+                    )
                   ),
                 OutlinedButton(
                   onPressed: () {
                     max_search += 10;
                     getJSONData();
                   },
-                  child: Text("다음 페이지"),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: Peri.VeryPeri,
                   ),
+                  child: Text("다음 페이지"),
                 ),
               ],
             ),

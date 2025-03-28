@@ -73,7 +73,7 @@ abstract class RouterOutlet {
             routes: [
               GoRoute(
                 path: _Path.text_result,
-                builder: (context, state) => TextSearchResult(),
+                builder: (context, state) => TextSearchResult(keyword : state.extra as String),
               ),
             ],
           ),

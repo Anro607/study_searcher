@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_search/app/router/router.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 Container search_box(BuildContext context, String page) {
+  final controller = TextEditingController();
+
   return Container(
     width: 320,
     height: 50,
@@ -18,7 +23,9 @@ Container search_box(BuildContext context, String page) {
             if (page == "image") {
               context.go(RouterPath.image_result);
             } else if (page == "text") {
-              context.go(RouterPath.text_result);
+              final String keyword = controller.text;
+              context.go(RouterPath.text_result, extra: keyword);
+              
             }
           },
           icon: Icon(Icons.search, color: Colors.white, size: 30.0),
@@ -31,6 +38,7 @@ Container search_box(BuildContext context, String page) {
             border: Border(bottom: BorderSide(color: Colors.white, width: 2.5)),
           ),
           child: TextField(
+            controller: controller,
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
@@ -41,13 +49,13 @@ Container search_box(BuildContext context, String page) {
                   page == "image" ? "다음 용어로 이미지를 검색합니다" : "다음 용어로 텍스트를 검색합니다",
               hintStyle: TextStyle(color: Peri.WinklePeri),
             ),
-            onChanged: (String temp) {},
           ),
         ),
         SizedBox(width: 15),
       ],
     ),
   );
+  
 }
 
 GestureDetector image_box(BuildContext context, String url) {
@@ -69,7 +77,23 @@ GestureDetector image_box(BuildContext context, String url) {
   );
 }
 
-GestureDetector text_box(BuildContext context, String title, String contents) {
+GestureDetector text_box(BuildContext context, String keyword, int index, int size) {
+  
+  var search_results = [];
+
+  Future<String> getJSONData() async {
+    var url = Uri.parse(
+      'https://dapi.kakao.com/v2/search/web?target=title&query=$keyword&size=$size',
+    );
+    var response = await http.get(
+      url,
+      headers: {"Authorization": "KakaoAK 694742416ffa1cf156b692be155cf50e"},
+    );
+    search_results = json.decode(response.body)["documents"];
+    print(search_results[0]["contents"]);
+    
+    return "Sucess";
+  }
   return GestureDetector(
     onTap: () => context.go(RouterPath.text_detail),
     child: Container(
@@ -86,7 +110,7 @@ GestureDetector text_box(BuildContext context, String title, String contents) {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              title,
+              search_results[0]["title"],
               style: TextStyle(
                 fontSize: 23.0,
                 fontWeight: FontWeight.bold,
@@ -97,7 +121,7 @@ GestureDetector text_box(BuildContext context, String title, String contents) {
             ),
             Divider(height: 5, thickness: 2, color: Peri.WinklePeri),
             Text(
-              contents,
+              search_results[0]["context"],
               style: TextStyle(fontSize: 14.0, color: Peri.VeryPeri),
               overflow: TextOverflow.fade,
               maxLines: 2,

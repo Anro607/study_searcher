@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:image_search/app/screen/UI.dart';
 
+
 class TextSearchPage extends StatelessWidget {
   const TextSearchPage({super.key});
-
+  
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -21,4 +22,6 @@ class TextSearchPage extends StatelessWidget {
       ),
     );
   }
+
+    
 }
