@@ -19,7 +19,7 @@ class FavoritePage extends ConsumerWidget {
             number += 1;
             providerNotifier.foo_ = number;   //foo의 setter
             print(number);
-          }
+          } 
         ),
     );
   }

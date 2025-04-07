@@ -57,7 +57,7 @@ abstract class RouterOutlet {
             routes: [
               GoRoute(
                 path: _Path.image_result,
-                builder: (context, state) => ImageSearchResult(),
+                builder: (context, state) => ImageSearchResult(keyword: state.extra as String,),
               ),
             ],
           ),
