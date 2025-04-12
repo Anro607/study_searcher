@@ -18,10 +18,14 @@ Container search_box(BuildContext context, String page) {
         IconButton(
           onPressed: () {
             final String keyword = controller.text;
-            if (page == "image") {
-              context.go(RouterPath.image_result, extra: keyword);
+            if (keyword.isNotEmpty){
+              if (page == "image") {
+              context.push(RouterPath.image_result, extra: keyword);
             } else if (page == "text") {
-              context.go(RouterPath.text_result, extra: keyword);
+              context.push(RouterPath.text_result, extra: keyword);
+            }
+            }else{
+              //뭐띄우지
             }
           },
           icon: Icon(Icons.search, color: Colors.white, size: 30.0),
@@ -53,15 +57,14 @@ Container search_box(BuildContext context, String page) {
   );
 }
 
-GestureDetector image_box(BuildContext context, String url) {
+GestureDetector image_box(BuildContext context, Map result) {
   return GestureDetector(
-    onTap: () => context.go(RouterPath.image_detail),
+    onTap: () => context.push(RouterPath.image_detail, extra: result),
     child: Container(
       width: 185,
       height: 170,
-      margin: EdgeInsets.fromLTRB(0, 0, 0, 14),
       decoration: BoxDecoration(
-        image: DecorationImage(image: NetworkImage(url), fit: BoxFit.cover),
+        image: DecorationImage(image: NetworkImage(result["thumbnail_url"]), fit: BoxFit.cover),
         border: Border.all(width: 4.0, color: Peri.WinklePeri),
         borderRadius: BorderRadius.circular(20.0),
       ),
@@ -69,9 +72,9 @@ GestureDetector image_box(BuildContext context, String url) {
   );
 }
 
-GestureDetector text_box(BuildContext context, String title, String content) {
+GestureDetector text_box(BuildContext context, Map result) {
   return GestureDetector(
-    onTap: () => context.go(RouterPath.text_detail),
+    onTap: () => context.push(RouterPath.text_detail, extra: result),
     child: Container(
       width: 350,
       height: 130,
@@ -86,7 +89,7 @@ GestureDetector text_box(BuildContext context, String title, String content) {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              title,
+              result["title"].replaceAll(RegExp(r'<.*?>'), ''),
               style: TextStyle(
                 fontSize: 23.0,
                 fontWeight: FontWeight.bold,
@@ -97,7 +100,7 @@ GestureDetector text_box(BuildContext context, String title, String content) {
             ),
             Divider(height: 5, thickness: 2, color: Peri.WinklePeri),
             Text(
-              content,
+              result["contents"].replaceAll(RegExp(r'<.*?>'), ''),
               style: TextStyle(fontSize: 14.0, color: Peri.VeryPeri),
               overflow: TextOverflow.fade,
               maxLines: 2,
@@ -107,6 +110,24 @@ GestureDetector text_box(BuildContext context, String title, String content) {
       ),
     ),
   );
+}
+
+SizedBox back_button(BuildContext context){
+  return SizedBox(width: 70, height: 70, child: FittedBox(child: FloatingActionButton(onPressed: context.pop, backgroundColor: Peri.WinklePeri, foregroundColor: Colors.white, child:Icon(Icons.arrow_back),)));
+}
+
+OutlinedButton loading_button(int size, dynamic getJSONData, dynamic providerNotifier){
+  return                 OutlinedButton(
+                  onPressed: () {
+                    size += 10; 
+                    getJSONData(providerNotifier);
+                  },
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Peri.VeryPeri,
+                  ),
+                  child: Text("다음 페이지"),
+                );
 }
 
 class Peri {

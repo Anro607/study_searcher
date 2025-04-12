@@ -65,7 +65,7 @@ abstract class RouterOutlet {
             routes: [
               GoRoute(
                 path: _Path.image_detail,
-                builder: (context, state) => ImageSearchDetail(),
+                builder: (context, state) => ImageSearchDetail(detail: state.extra as Map,),
               ),
             ],
           ),
@@ -81,7 +81,7 @@ abstract class RouterOutlet {
             routes: [
               GoRoute(
                 path: _Path.text_detail,
-                builder: (context, state) => TextSearchDetail(),
+                builder: (context, state) => TextSearchDetail(detail: state.extra as Map,),
               ),
             ],
           ),

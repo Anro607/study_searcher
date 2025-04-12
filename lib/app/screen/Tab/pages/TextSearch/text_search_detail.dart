@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:image_search/app/screen/UI.dart';
 
 class TextSearchDetail extends StatelessWidget {
-  const TextSearchDetail({super.key});
+  const TextSearchDetail({super.key, required this.detail});
+  final Map detail;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    print(detail);
+    return Scaffold(body: Center(
       child: Column(
         children: [
           SizedBox(height: 50),
@@ -19,7 +21,7 @@ class TextSearchDetail extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "원본 제목",
+                    detail["title"],
                     style: TextStyle(
                       fontSize: 26.0,
                       fontWeight: FontWeight.bold,
@@ -30,10 +32,10 @@ class TextSearchDetail extends StatelessWidget {
                   ),
                   Divider(height: 5, thickness: 2, color: Peri.WinklePeri),
                   Text(
-                    "https://www.youtube.com/watch?v=B0Kms_d5DsM",
+                    detail["contents"],
                     style: TextStyle(fontSize: 17.0, color: Peri.VeryPeri),
                     overflow: TextOverflow.fade,
-                    maxLines: 2,
+                    maxLines: 8,
                   ),
                 ],
               ),
@@ -41,6 +43,6 @@ class TextSearchDetail extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ), floatingActionButton: back_button(context),);
   }
 }
