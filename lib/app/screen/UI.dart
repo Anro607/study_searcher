@@ -18,13 +18,13 @@ Container search_box(BuildContext context, String page) {
         IconButton(
           onPressed: () {
             final String keyword = controller.text;
-            if (keyword.isNotEmpty){
+            if (keyword.isNotEmpty) {
               if (page == "image") {
-              context.push(RouterPath.image_result, extra: keyword);
-            } else if (page == "text") {
-              context.push(RouterPath.text_result, extra: keyword);
-            }
-            }else{
+                context.push(RouterPath.image_result, extra: keyword);
+              } else if (page == "text") {
+                context.push(RouterPath.text_result, extra: keyword);
+              }
+            } else {
               //뭐띄우지
             }
           },
@@ -64,7 +64,10 @@ GestureDetector image_box(BuildContext context, Map result) {
       width: 185,
       height: 170,
       decoration: BoxDecoration(
-        image: DecorationImage(image: NetworkImage(result["thumbnail_url"]), fit: BoxFit.cover),
+        image: DecorationImage(
+          image: NetworkImage(result["thumbnail_url"]),
+          fit: BoxFit.cover,
+        ),
         border: Border.all(width: 4.0, color: Peri.WinklePeri),
         borderRadius: BorderRadius.circular(20.0),
       ),
@@ -112,22 +115,30 @@ GestureDetector text_box(BuildContext context, Map result) {
   );
 }
 
-SizedBox back_button(BuildContext context){
-  return SizedBox(width: 70, height: 70, child: FittedBox(child: FloatingActionButton(onPressed: context.pop, backgroundColor: Peri.WinklePeri, foregroundColor: Colors.white, child:Icon(Icons.arrow_back),)));
+SizedBox back_button(BuildContext context) {
+  return SizedBox(
+    width: 70,
+    height: 70,
+    child: FittedBox(
+      child: FloatingActionButton(
+        onPressed: context.pop,
+        backgroundColor: Peri.WinklePeri,
+        foregroundColor: Colors.white,
+        child: Icon(Icons.arrow_back),
+      ),
+    ),
+  );
 }
 
-OutlinedButton loading_button(int size, dynamic getJSONData, dynamic providerNotifier){
-  return                 OutlinedButton(
-                  onPressed: () {
-                    size += 10; 
-                    getJSONData(providerNotifier);
-                  },
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Peri.VeryPeri,
-                  ),
-                  child: Text("다음 페이지"),
-                );
+OutlinedButton loading_button({required VoidCallback onPressed}) {  //required : 필수 매개변수(없으면망해서 오류남)
+  return OutlinedButton(
+    onPressed: onPressed,
+    style: OutlinedButton.styleFrom(
+      foregroundColor: Colors.white,
+      backgroundColor: Peri.VeryPeri,
+    ),
+    child: Text("다음 페이지"),
+  );
 }
 
 class Peri {
