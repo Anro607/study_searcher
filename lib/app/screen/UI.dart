@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_search/app/router/router.dart';
+import 'package:image_search/app/screen/Tab/pages/ImageSearch/image_search_result.dart';
 
 Container search_box(BuildContext context, String page) {
   final controller = TextEditingController();
@@ -57,7 +58,12 @@ Container search_box(BuildContext context, String page) {
   );
 }
 
-GestureDetector image_box(BuildContext context, Map result) {
+GestureDetector image_box(
+  BuildContext context,
+  Map result,
+  bool fav_bool,
+  VoidCallback db_InOut,
+) {
   return GestureDetector(
     onTap: () => context.push(RouterPath.image_detail, extra: result),
     child: Container(
@@ -71,11 +77,33 @@ GestureDetector image_box(BuildContext context, Map result) {
         border: Border.all(width: 4.0, color: Peri.WinklePeri),
         borderRadius: BorderRadius.circular(20.0),
       ),
+      child: Align(
+        alignment: Alignment.topRight,
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Peri.WinklePeri,
+            borderRadius: BorderRadius.only(
+              topRight: Radius.circular(10),
+              bottomLeft: Radius.circular(20),
+            ),
+          ),
+          child: IconButton(
+            onPressed: db_InOut,
+            icon: Icon(
+              Icons.favorite,
+              color: fav_bool ? Colors.red : Colors.white,
+            ),
+          ),
+        ),
+      ),
     ),
   );
 }
 
-GestureDetector text_box(BuildContext context, Map result) {
+GestureDetector text_box(BuildContext context, Map result, bool fav_bool,
+  VoidCallback db_InOut,) {
   return GestureDetector(
     onTap: () => context.push(RouterPath.text_detail, extra: result),
     child: Container(
@@ -87,19 +115,34 @@ GestureDetector text_box(BuildContext context, Map result) {
         borderRadius: BorderRadius.circular(20.0),
       ),
       child: Padding(
-        padding: EdgeInsets.all(10.0),
+        padding: EdgeInsets.fromLTRB(10, 7, 10, 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              result["title"].replaceAll(RegExp(r'<.*?>'), ''),
-              style: TextStyle(
-                fontSize: 23.0,
-                fontWeight: FontWeight.bold,
-                color: Peri.VeryPeri,
-              ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
+            Row(
+              children: [
+                SizedBox(
+                  width: 270,
+                  child: Text(
+                    result["title"].replaceAll(RegExp(r'<.*?>'), ''),
+                    style: TextStyle(
+                      fontSize: 23.0,
+                      fontWeight: FontWeight.bold,
+                      color: Peri.VeryPeri,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ),
+                IconButton(
+                  onPressed: db_InOut,
+                  icon: Icon(
+                    Icons.favorite,
+                    color: fav_bool ? Colors.red : Peri.WinklePeri,
+                  ),
+                  iconSize: 27,
+                ),
+              ],
             ),
             Divider(height: 5, thickness: 2, color: Peri.WinklePeri),
             Text(
@@ -130,7 +173,8 @@ SizedBox back_button(BuildContext context) {
   );
 }
 
-OutlinedButton loading_button({required VoidCallback onPressed}) {  //required : 필수 매개변수(없으면망해서 오류남)
+OutlinedButton loading_button({required VoidCallback onPressed}) {
+  //required : 필수 매개변수(없으면망해서 오류남)
   return OutlinedButton(
     onPressed: onPressed,
     style: OutlinedButton.styleFrom(

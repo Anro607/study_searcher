@@ -57,7 +57,9 @@ abstract class RouterOutlet {
             routes: [
               GoRoute(
                 path: _Path.image_result,
-                builder: (context, state) => ImageSearchResult(keyword: state.extra as String,),
+                builder:
+                    (context, state) =>
+                        ImageSearchResult(keyword: state.extra as String),
               ),
             ],
           ),
@@ -65,7 +67,9 @@ abstract class RouterOutlet {
             routes: [
               GoRoute(
                 path: _Path.image_detail,
-                builder: (context, state) => ImageSearchDetail(detail: state.extra as Map,),
+                builder:
+                    (context, state) =>
+                        ImageSearchDetail(detail: state.extra as Map),
               ),
             ],
           ),
@@ -73,7 +77,9 @@ abstract class RouterOutlet {
             routes: [
               GoRoute(
                 path: _Path.text_result,
-                builder: (context, state) => TextSearchResult(keyword : state.extra as String),
+                builder:
+                    (context, state) =>
+                        TextSearchResult(keyword: state.extra as String),
               ),
             ],
           ),
@@ -81,7 +87,9 @@ abstract class RouterOutlet {
             routes: [
               GoRoute(
                 path: _Path.text_detail,
-                builder: (context, state) => TextSearchDetail(detail: state.extra as Map,),
+                builder:
+                    (context, state) =>
+                        TextSearchDetail(detail: state.extra as Map),
               ),
             ],
           ),
@@ -93,22 +101,22 @@ abstract class RouterOutlet {
 
 abstract class RouterPath {
   static const root = _Path.root;
-  static const favorite = _Path.favorite;
   static const image = _Path.image;
   static const image_result = _Path.image_result;
   static const image_detail = _Path.image_detail;
   static const text = _Path.text;
   static const text_result = _Path.text_result;
   static const text_detail = _Path.text_detail;
+  static const favorite = _Path.favorite;
 }
 
 abstract class _Path {
   static const root = '/';
-  static const favorite = '/favorite';
   static const image = '/image';
   static const image_result = '/image_result';
   static const image_detail = '/image_detail';
   static const text = '/text';
   static const text_result = '/text_result';
   static const text_detail = '/text_detail';
+  static const favorite = '/favorite';
 }
