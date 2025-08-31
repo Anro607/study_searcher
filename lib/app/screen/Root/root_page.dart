@@ -7,7 +7,7 @@ class RootPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.go(RouterPath.image);
+    context.go(RouterPath.text);
     return Center();
   }
 }

@@ -27,6 +27,9 @@ Container search_box(BuildContext context, String page) {
               }
             } else {
               //뭐띄우지
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text('빈 입력입니다.')));
             }
           },
           icon: Icon(Icons.search, color: Colors.white, size: 30.0),
@@ -102,8 +105,12 @@ GestureDetector image_box(
   );
 }
 
-GestureDetector text_box(BuildContext context, Map result, bool fav_bool,
-  VoidCallback db_InOut,) {
+GestureDetector text_box(
+  BuildContext context,
+  Map result,
+  bool fav_bool,
+  VoidCallback db_InOut,
+) {
   return GestureDetector(
     onTap: () => context.push(RouterPath.text_detail, extra: result),
     child: Container(

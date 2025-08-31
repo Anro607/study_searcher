@@ -16,7 +16,6 @@ class ImageSearchResult extends ConsumerWidget {
   const ImageSearchResult({super.key, required this.keyword});
   final String keyword;
 
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final providerVO = ref.watch(imageProvider); //watch : 감시
@@ -45,50 +44,52 @@ class ImageSearchResult extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children:
-                        search_info['pageable_count'] >= size
-                            ? [
-                              Wrap(
-                                spacing: 10,
-                                runSpacing: 15,
-                                children: [
-                                  for (int i = 0; i < size; i++)
-                                    image_box(
-                                      context,
-                                      search_results[i],
-                                      checkBool(search_results[i]),
-                                      () => db_InOut(
-                                        providerNotifier,
-                                        search_results[i],
-                                      ),
-                                    ),
-                                ],
-                              ),
-                              loading_button(
-                                onPressed: () {
-                                  size += 10;
-                                  getJSONData(providerNotifier, false);
-                                },
-                              ),
-                            ]
-                            : [
-                              //두 페이지 이상 불러올 데이터가 없을 때
-                              Wrap(
-                                spacing: 10,
-                                runSpacing: 15,
-                                children: [
-                                  for (int i = 0; i < size; i++)
-                                    image_box(
-                                      context,
-                                      search_results[i],
-                                      checkBool(search_results[i]),
-                                      () => db_InOut(
-                                        providerNotifier,
-                                        search_results[i],
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ],
+                        search_info['pageable_count'] != 0
+                            ? search_info['pageable_count'] >= size
+                                ? [
+                                  Wrap(
+                                    spacing: 10,
+                                    runSpacing: 15,
+                                    children: [
+                                      for (int i = 0; i < size; i++)
+                                        image_box(
+                                          context,
+                                          search_results[i],
+                                          checkBool(search_results[i]),
+                                          () => db_InOut(
+                                            providerNotifier,
+                                            search_results[i],
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                  loading_button(
+                                    onPressed: () {
+                                      size += 10;
+                                      getJSONData(providerNotifier, false);
+                                    },
+                                  ),
+                                ]
+                                : [
+                                  //두 페이지 이상 불러올 데이터가 없을 때
+                                  Wrap(
+                                    spacing: 10,
+                                    runSpacing: 15,
+                                    children: [
+                                      for (int i = 0; i < size; i++)
+                                        image_box(
+                                          context,
+                                          search_results[i],
+                                          checkBool(search_results[i]),
+                                          () => db_InOut(
+                                            providerNotifier,
+                                            search_results[i],
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ]
+                            : [],
                   ),
                 ),
               ),
