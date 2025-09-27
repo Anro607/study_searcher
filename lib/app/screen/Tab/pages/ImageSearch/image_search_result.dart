@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:image_search/app/screen/Tab/pages/ImageSearch/provider/image_provider.dart';
 import 'package:hive/hive.dart';
+import 'package:image_search/repository/repository.dart';
 
 int size = 20;
 Map search_info = {};
@@ -34,10 +35,7 @@ class ImageSearchResult extends ConsumerWidget {
             child: Scaffold(
               appBar: PreferredSize(
                 preferredSize: Size.fromHeight(100),
-                child: Padding(
-                  padding: EdgeInsets.all(25.0),
-                  child: search_box(context, "image"),
-                ),
+                child: Padding(padding: EdgeInsets.all(25.0), child: search_box(context, "image")),
               ),
               body: SingleChildScrollView(
                 child: Center(
@@ -52,15 +50,9 @@ class ImageSearchResult extends ConsumerWidget {
                                     runSpacing: 15,
                                     children: [
                                       for (int i = 0; i < size; i++)
-                                        image_box(
-                                          context,
-                                          search_results[i],
-                                          checkBool(search_results[i]),
-                                          () => db_InOut(
-                                            providerNotifier,
-                                            search_results[i],
-                                          ),
-                                        ),
+                                        image_box(context, search_results[i], checkBool(search_results[i]), () {
+                                          _handleFavoriteToggle(providerNotifier, search_results[i]);
+                                        }),
                                     ],
                                   ),
                                   loading_button(
@@ -77,15 +69,9 @@ class ImageSearchResult extends ConsumerWidget {
                                     runSpacing: 15,
                                     children: [
                                       for (int i = 0; i < size; i++)
-                                        image_box(
-                                          context,
-                                          search_results[i],
-                                          checkBool(search_results[i]),
-                                          () => db_InOut(
-                                            providerNotifier,
-                                            search_results[i],
-                                          ),
-                                        ),
+                                        image_box(context, search_results[i], checkBool(search_results[i]), () {
+                                          _handleFavoriteToggle(providerNotifier, search_results[i]);
+                                        }),
                                     ],
                                   ),
                                 ]
@@ -101,21 +87,12 @@ class ImageSearchResult extends ConsumerWidget {
     );
   }
 
-  Future<String> providerTohive() async {
-    //DB연동
-    await fav.clear();
-    for (var item in fav_provider) {
-      await fav.add(item);
-    }
-    return "success";
-  }
+
 
   bool checkBool(Map<String, dynamic> detail) {
     //url가 box 내부에 있다면 return true, 없다면 false를 줘서 콘테나 하트를 채우거나 안채우게 해줌
     if (fav_provider.any(
-      (item) =>
-          item['thumbnail_url'] ==
-          detail['thumbnail_url'], //map은 내용 자체로 검색이 안됨. 고유 내용물(필드)로 비교
+      (item) => item['thumbnail_url'] == detail['thumbnail_url'], //map은 내용 자체로 검색이 안됨. 고유 내용물(필드)로 비교
     )) {
       return true;
     } else {
@@ -123,14 +100,21 @@ class ImageSearchResult extends ConsumerWidget {
     }
   }
 
+  void _handleFavoriteToggle(dynamic providerNotifier, Map<String, dynamic> item) async {
+    if (FavoriteRepository.isImageFavorite(item)) {
+      await FavoriteRepository.removeImageFavorite(item);
+    } else {
+      await FavoriteRepository.addImageFavorite(item);
+    }
+    db_InOut(providerNotifier, item);
+  }
+
   void db_InOut(dynamic providerNotifier, Map<String, dynamic> detail) {
     //checkBool(detail)에 따라 db 추가, 삭제  여기서하는이유는프로바이더땜시
     // print("처리 전 : ");
     // print(fav_provider);
     if (checkBool(detail)) {
-      fav_provider.removeWhere(
-        (item) => item['thumbnail_url'] == detail['thumbnail_url'],
-      );
+      fav_provider.removeWhere((item) => item['thumbnail_url'] == detail['thumbnail_url']);
     } else {
       fav_provider.add(detail);
     }
@@ -140,13 +124,8 @@ class ImageSearchResult extends ConsumerWidget {
   }
 
   Future<String> getJSONData(dynamic providerNotifier, bool isFirst) async {
-    var url = Uri.parse(
-      'https://dapi.kakao.com/v2/search/image?target=title&query=$keyword&size=$size',
-    );
-    var response = await http.get(
-      url,
-      headers: {"Authorization": "KakaoAK 694742416ffa1cf156b692be155cf50e"},
-    );
+    var url = Uri.parse('https://dapi.kakao.com/v2/search/image?target=title&query=$keyword&size=$size');
+    var response = await http.get(url, headers: {"Authorization": "KakaoAK 694742416ffa1cf156b692be155cf50e"});
     // print(search_results);
     search_info = json.decode(response.body)["meta"];
     search_results = json.decode(response.body)["documents"];
@@ -160,7 +139,6 @@ class ImageSearchResult extends ConsumerWidget {
 
   Future<String> futurecompo(dynamic providerNotifier) async {
     await getJSONData(providerNotifier, true);
-    await providerTohive();
     return "success";
   }
 }

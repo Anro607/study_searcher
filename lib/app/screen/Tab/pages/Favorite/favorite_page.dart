@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:image_search/repository/repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_search/app/screen/Tab/pages/Favorite/provider/favorite_provider.dart';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -26,98 +27,61 @@ class FavoritePage extends ConsumerWidget {
     print(favImage_provider);
     print(favImage.values);
 
-    return FutureBuilder(
-      future: providerToHive(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator()); //기본제공 로딩바
-        } else {
-          return Scaffold(
-            appBar: PreferredSize(
-              preferredSize: Size.fromHeight(70),
-              child: Center(
-                child: ToggleSwitch(
-                  minWidth: 100.0,
-                  cornerRadius: 17.0,
-                  activeFgColor: Peri.VeryPeri,
-                  inactiveBgColor: Peri.VeryPeri,
-                  inactiveFgColor: Colors.white,
-                  totalSwitches: 2,
-                  labels: ['Image', 'Text'],
-                  fontSize: 18.0,
-                  borderWidth: 3.0,
-                  borderColor: [Peri.VeryPeri],
-                  radiusStyle: true,
-                  activeBgColors: [
-                    [Colors.white],
-                    [Colors.white],
-                  ],
-                  initialLabelIndex: providerVO.toggleIndex,
-                  onToggle: (index) {
-                    print('switched to: $index');
-                    providerNotifier.toggleIndex_ = index!;
-                    toggle_index = index;
-                  },
-                ),
-              ),
-            ),
-            body: Center(
-              child: Column(
-                children: [
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(70),
+        child: Center(
+          child: ToggleSwitch(
+            minWidth: 100.0,
+            cornerRadius: 17.0,
+            activeFgColor: Peri.VeryPeri,
+            inactiveBgColor: Peri.VeryPeri,
+            inactiveFgColor: Colors.white,
+            totalSwitches: 2,
+            labels: ['Image', 'Text'],
+            fontSize: 18.0,
+            borderWidth: 3.0,
+            borderColor: [Peri.VeryPeri],
+            radiusStyle: true,
+            activeBgColors: [
+              [Colors.white],
+              [Colors.white],
+            ],
+            initialLabelIndex: providerVO.toggleIndex,
+            onToggle: (index) {
+              print('switched to: $index');
+              providerNotifier.toggleIndex_ = index!;
+              toggle_index = index;
+            },
+          ),
+        ),
+      ),
+      body: Center(
+        child: Column(
+          children: [
                   toggle_index == 0
-                      ? Wrap(
-                        spacing: 10,
-                        runSpacing: 15,
-                        children: [
-                          for (int i = 0; i < favImage_provider.length; i++)
-                            image_box(
-                              context,
-                              favImage_provider[i],
-                              checkBool(favImage_provider[i]),
-                              () => db_InOut(
-                                providerNotifier,
-                                favImage_provider[i],
-                              ),
-                            ),
-                        ],
-                      )
-                      : Column(
-                        children: [
-                          for (int i = 0; i < favText_provider.length; i++)
-                            text_box(
-                              context,
-                              favText_provider[i],
-                              checkBool(favText_provider[i]),
-                              () => db_InOut(
-                                providerNotifier,
-                                favText_provider[i],
-                              ),
-                            ),
-                        ],
-                      ),
-                ],
-              ),
-            ),
-          );
-        }
-      },
+                ? Wrap(
+                  spacing: 10,
+                  runSpacing: 15,
+                  children: [
+                    for (int i = 0; i < favImage_provider.length; i++)
+                      image_box(context, favImage_provider[i], checkBool(favImage_provider[i]), () {
+                        _removeFavorite(providerNotifier, favImage_provider[i]);
+                      }),
+                  ],
+                )
+                : Column(
+                  children: [
+                    for (int i = 0; i < favText_provider.length; i++)
+                      text_box(context, favText_provider[i], checkBool(favText_provider[i]), () {
+                        _removeFavorite(providerNotifier, favText_provider[i]);
+                      }),
+                  ],
+                ),
+          ],
+        ),
+      ),
     );
-  }
-
-  Future<String> providerToHive() async {
-    //DB연동
-    if (toggle_index == 0) {
-      await favImage.clear();
-      for (var item in favImage_provider) {
-        await favImage.add(item);
-      }
-    } else {
-      await favText.clear();
-      for (var item in favText_provider) {
-        await favText.add(item);
-      }
-    }
-    return "success";
   }
 
   bool checkBool(Map<dynamic, dynamic> detail) {
@@ -137,6 +101,18 @@ class FavoritePage extends ConsumerWidget {
         return false;
       }
     }
+  }
+
+  void _removeFavorite(dynamic providerNotifier, Map item) async {
+    if (toggle_index == 0) {
+      await FavoriteRepository.removeImageFavorite(item);
+      providerNotifier.favImageP_ = FavoriteRepository.getAllImageFavorites();
+    } else {
+      await FavoriteRepository.removeTextFavorite(item);
+      providerNotifier.favTextP_ = FavoriteRepository.getAllTextFavorites();
+    }
+
+    db_InOut(providerNotifier, item);
   }
 
   void db_InOut(dynamic providerNotifier, Map<dynamic, dynamic> detail) {
